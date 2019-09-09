@@ -18,11 +18,13 @@ POOL_STEP = 4
 POOL_SIZE = 2
 BASE_RANGE = [118, 128]
 HEIGHT_RANGE = 2
-SHAVE_Y = 0
-SHAVE_X = 0
+SHAVE_Y = 92
+SHAVE_X = 92
 SEPARATE = 4
 
 SAVE_DIR = 'make_images'
+
+BOX = True
 
 
 def main():
@@ -51,6 +53,7 @@ def main():
         pad_up = np.tile(pad_up, (SHAVE_Y, 1))
 
         pad_down = lines[-1, :]
+        pad_down = np.tile(pad_down, (SHAVE_Y+1, 1))
         pad_down = np.tile(pad_down, (SHAVE_Y, 1))
         lines = np.concatenate([pad_up, lines, pad_down], axis=0)
 
@@ -58,10 +61,16 @@ def main():
         lines = np.concatenate([pad_side, lines, pad_side], axis=1)
 
     teach_before = np.where(lines != 0, 0, 255)
-    lines = cv2.boxFilter(lines, -1, ksize=(BOX_FILTER_SIZE, BOX_FILTER_SIZE))
+
+    if BOX:
+        box_pad = lines[-1, :]
+        box_pad = np.tile(box_pad, (2, 1))
+        lines = np.concatenate([lines, box_pad], axis=0)
+        lines = cv2.boxFilter(lines, -1, ksize=(BOX_FILTER_SIZE, BOX_FILTER_SIZE))
+        lines = lines[:-2, :]
 
     train = np.random.randint(BASE_RANGE[0], BASE_RANGE[1], size=(
-        base_height+2*SHAVE_Y, base_width+2*SHAVE_X), dtype=np.uint8)
+        lines.shape[0], lines.shape[1]), dtype=np.uint8)
     train_org = train.copy()
     teach = np.ones_like(train, dtype=np.uint8)*255
 
@@ -116,7 +125,12 @@ def main():
             lines = np.concatenate([pad_side, lines, pad_side], axis=1)
 
         teach_before = np.where(lines != 0, 0, 255)
-        lines = cv2.boxFilter(lines, -1, ksize=(BOX_FILTER_SIZE, BOX_FILTER_SIZE))
+        if BOX:
+            box_pad = lines[-1, :]
+            box_pad = np.tile(box_pad, (2, 1))
+            lines = np.concatenate([lines, box_pad], axis=0)
+            lines = cv2.boxFilter(lines, -1, ksize=(BOX_FILTER_SIZE, BOX_FILTER_SIZE))
+            lines = lines[:-2, :]
 
         train = np.random.randint(BASE_RANGE[0], BASE_RANGE[1], size=(
             base_height+2*SHAVE_Y, base_width+2*SHAVE_X), dtype=np.uint8)
