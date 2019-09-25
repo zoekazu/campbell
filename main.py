@@ -18,13 +18,13 @@ POOL_STEP = 4
 POOL_SIZE = 2
 BASE_RANGE = [118, 128]
 HEIGHT_RANGE = 2
-SHAVE_Y = 92
-SHAVE_X = 92
+SHAVE_Y = 0  # 100
+SHAVE_X = 0  # 100
 SEPARATE = 4
 
 SAVE_DIR = 'make_images'
 
-BOX = True
+BOX = False
 
 
 def main():
@@ -53,7 +53,6 @@ def main():
         pad_up = np.tile(pad_up, (SHAVE_Y, 1))
 
         pad_down = lines[-1, :]
-        pad_down = np.tile(pad_down, (SHAVE_Y+1, 1))
         pad_down = np.tile(pad_down, (SHAVE_Y, 1))
         lines = np.concatenate([pad_up, lines, pad_down], axis=0)
 
