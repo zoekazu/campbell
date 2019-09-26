@@ -16,7 +16,8 @@ BOX_FILTER_SIZE = 3
 CNN_FILTER_SIZE = 3
 POOL_STEP = 4
 POOL_SIZE = 2
-BASE_RANGE = [118, 128]
+BASE = 128
+RAND_STR = 5
 HEIGHT_RANGE = 2
 SHAVE_Y = 0  # 100
 SHAVE_X = 0  # 100
@@ -68,7 +69,7 @@ def main():
         lines = cv2.boxFilter(lines, -1, ksize=(BOX_FILTER_SIZE, BOX_FILTER_SIZE))
         lines = lines[:-2, :]
 
-    train = np.random.randint(BASE_RANGE[0], BASE_RANGE[1], size=(
+    train = np.random.normal(BASE, RAND_STR, size=(
         lines.shape[0], lines.shape[1]), dtype=np.uint8)
     train_org = train.copy()
     teach = np.ones_like(train, dtype=np.uint8)*255
@@ -131,7 +132,7 @@ def main():
             lines = cv2.boxFilter(lines, -1, ksize=(BOX_FILTER_SIZE, BOX_FILTER_SIZE))
             lines = lines[:-2, :]
 
-        train = np.random.randint(BASE_RANGE[0], BASE_RANGE[1], size=(
+        train = np.random.normal(BASE, RAND_STR, size=(
             base_height+2*SHAVE_Y, base_width+2*SHAVE_X), dtype=np.uint8)
         train_org = train.copy()
         teach = np.ones_like(train, dtype=np.uint8)*255
